@@ -1,6 +1,6 @@
 # LG Ring
 
-Zvonček pre **LG webOS TV bez rootu**. Home Assistant prijme udalosť zvončeka, podľa potreby zobudí TV cez Wake-on-LAN a spustí `sk.filip.doorbell`. Aplikácia prehrá pribalený dvojtónový zvuk a voliteľne zobrazí kameru.
+Zvonček pre **LG webOS TV bez rootu**. Home Assistant prijme udalosť zvončeka, podľa potreby zobudí TV cez Wake-on-LAN a spustí `sk.filip.doorbell`. Aplikácia prehrá pribalený dvojtónový zvuk trikrát s jednosekundovou pauzou medzi prehratiami a voliteľne zobrazí kameru.
 
 ## Stav projektu
 
@@ -70,7 +70,7 @@ npx ares-setup-device
 npx ares-novacom --device lg --getkey
 # Zadaj passphrase z Developer Mode aplikácie.
 npm run package
-npx ares-install --device lg dist/sk.filip.doorbell_0.1.0_all.ipk
+npx ares-install --device lg dist/sk.filip.doorbell_0.1.1_all.ipk
 npx ares-launch --device lg sk.filip.doorbell
 ```
 

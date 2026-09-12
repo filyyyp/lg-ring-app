@@ -1,6 +1,6 @@
 {
   "name": "lg-ring",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "LG webOS doorbell client for Home Assistant",
   "scripts": {

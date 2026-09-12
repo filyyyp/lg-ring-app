@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var el = function (id) { return document.getElementById(id); };
-  var timer, cameraTimer, deadline = 0, duration = 15, generation = 0, mediaNode;
+  var timer, cameraTimer, soundTimer, deadline = 0, duration = 15, generation = 0, mediaNode;
   var audio = el('chime');
   var system = window.webOSSystem || window.PalmSystem;
 
@@ -9,6 +9,9 @@
     generation += 1;
     clearInterval(timer);
     clearTimeout(cameraTimer);
+    clearTimeout(soundTimer);
+    audio.onended = null;
+    audio.onerror = null;
     audio.pause();
     if (mediaNode) {
       mediaNode.onload = mediaNode.onerror = mediaNode.onplaying = null;
@@ -42,15 +45,31 @@
   }
 
   function playSound(token) {
+    var remaining = 3;
     el('audio-status').textContent = '';
     function failed() {
-      if (token === generation) el('audio-status').textContent = 'Zvuk sa nespustil. Stlač „Vyskúšať zvonček“.';
+      if (token !== generation) return;
+      clearTimeout(soundTimer);
+      audio.onended = null;
+      audio.onerror = null;
+      el('audio-status').textContent = 'Zvuk sa nespustil. Stlač „Vyskúšať zvonček“.';
     }
-    try {
-      audio.currentTime = 0;
-      var result = audio.play();
-      if (result && result.catch) result.catch(failed);
-    } catch (error) { failed(); }
+    function playNext() {
+      if (token !== generation) return;
+      remaining -= 1;
+      audio.onended = function () {
+        if (token !== generation) return;
+        audio.onended = null;
+        if (remaining > 0) soundTimer = setTimeout(playNext, 1000);
+      };
+      audio.onerror = failed;
+      try {
+        audio.currentTime = 0;
+        var result = audio.play();
+        if (result && result.catch) result.catch(failed);
+      } catch (error) { failed(); }
+    }
+    playNext();
   }
 
   function camera(url, type, token) {

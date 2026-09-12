@@ -20,11 +20,22 @@ function client() {
   vm.runInNewContext(fs.readFileSync('app/app.js', 'utf8'), {
     document, window, Date: Clock,
     setInterval(fn) { intervals.set(++id, fn); return id; }, clearInterval(id) { intervals.delete(id); },
-    setTimeout(fn) { timeouts.set(++id, fn); return id; }, clearTimeout(id) { timeouts.delete(id); }
+    setTimeout(fn, delay) { timeouts.set(++id, {fn, at: now + delay}); return id; }, clearTimeout(id) { timeouts.delete(id); }
   });
   return { elements, handlers, document, intervals,
     event(name, detail) { handlers[name]({ detail }); },
-    advance(ms) { now += ms; [...intervals.values()].forEach(fn => fn()); },
+    advance(ms) {
+      const end = now + ms;
+      while (true) {
+        const next = [...timeouts.entries()].filter(([, t]) => t.at <= end).sort((a, b) => a[1].at - b[1].at)[0];
+        if (!next) break;
+        now = next[1].at;
+        timeouts.delete(next[0]);
+        next[1].fn();
+      }
+      now = end;
+      [...intervals.values()].forEach(fn => fn());
+    },
     get closed() { return closed; }, get played() { return played; }
   };
 }
@@ -89,4 +100,49 @@ test('leaving the app cancels ringing and expiry; Back closes explicitly', () =>
   assert.equal(c.intervals.size, 1);
   c.handlers.keydown({keyCode: 461, preventDefault() {}});
   assert.equal(c.closed, 1);
+});
+
+
+test('plays three complete chimes with a one-second pause after each ending', () => {
+  const c = client();
+  c.event('webOSLaunch', {action: 'doorbell'});
+  for (let count = 1; count <= 3; count++) {
+    assert.equal(c.played, count);
+    c.advance(2400);
+    assert.equal(c.played, count, 'does not overlap the current chime');
+    c.elements.chime.onended();
+    c.advance(999);
+    assert.equal(c.played, count);
+    c.advance(1);
+  }
+  assert.equal(c.played, 3);
+  assert.equal(c.elements.chime.onended, null);
+});
+
+test('closing during the pause cancels repeats; relaunch replaces old sequence', () => {
+  const c = client();
+  c.event('webOSLaunch', {action: 'doorbell'});
+  const staleEnded = c.elements.chime.onended;
+  c.elements.chime.onended();
+  c.elements.dismiss.onclick();
+  c.advance(1000);
+  assert.equal(c.played, 1);
+  c.event('webOSRelaunch', {action: 'doorbell'});
+  staleEnded();
+  c.advance(1000);
+  assert.equal(c.played, 2);
+  c.elements.chime.onended();
+  c.event('webOSRelaunch', {action: 'doorbell'});
+  c.advance(1000);
+  assert.equal(c.played, 3, 'previous scheduled repeat was cancelled');
+});
+
+test('media error stops the sequence and displays feedback', () => {
+  const c = client();
+  c.event('webOSLaunch', {action: 'doorbell'});
+  c.elements.chime.onerror();
+  c.advance(1000);
+  assert.equal(c.played, 1);
+  assert.equal(c.elements.chime.onended, null);
+  assert.match(c.elements['audio-status'].textContent, /Zvuk sa nespustil/);
 });
