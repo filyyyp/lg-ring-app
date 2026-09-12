@@ -33,16 +33,13 @@ npm test
 
 Cieľ pre prvé testovanie: **LG 75QNED87A6B, webOS 25 / 10.3.1-3006**. Test na tomto modeli zatiaľ neprebehol.
 
-Ak už máš Homebrew Channel, vytvor a spusti lokálny repozitár:
+V TV otvor **Homebrew Channel → Settings (ozubené koliesko) → Add repository** a vlož:
 
-```sh
-npm run repo:build
-npm run repo:serve
+```text
+https://filyyyp.github.io/lg-ring-app/repo.json
 ```
 
-Server vypíše adresu `http://IP_POCITACA:4174/repo.json`. V TV otvor **Homebrew Channel → Settings (ozubené koliesko) → Add repository**, zadaj celú adresu vrátane `/repo.json`, vráť sa do katalógu a obnov zoznam. Vyber **LG Ring – Zvonček → Install → Launch** a stlač **Vyskúšať zvonček**.
-
-Počítač aj TV musia byť v rovnakej sieti a počítač musí počas inštalácie bežať. Adresa `localhost` na TV odkazuje na TV, preto použi IP vypísanú serverom. Ak má počítač viac rozhraní, vyber adresu siete spoločnej s TV. Ak systémový firewall blokuje spojenie, povoľ prichádzajúce spojenie pre tento server. Server zdieľa iba katalóg a `.ipk`; zastav ho cez Ctrl+C. Po inštalácii ho aplikácia nepotrebuje, ale pri obnove katalógu musí byť opäť dostupný.
+Vráť sa do katalógu a obnov zoznam. Vyber **LG Ring – Zvonček → Install → Launch** a stlač **Vyskúšať zvonček**. Inštalačný balík sa sťahuje z GitHub Pages, počítač nemusí byť zapnutý.
 
 Root nie je potrebný pre našu aplikáciu. Homebrew Channel bez rootu používa vývojovú inštaláciu; vlastný repozitár neodstraňuje požiadavku aktívneho Developer Mode ani jeho časové obmedzenie.
 
@@ -54,7 +51,7 @@ Workflow `.github/workflows/pages.yml` pri každom pushi do `main` spustí testy
 
 Adresa katalógu je `https://filyyyp.github.io/lg-ring-app/repo.json` (dostupná po úspešnom deploymente). Zdrojový projekt: [filyyyp/lg-ring-app](https://github.com/filyyyp/lg-ring-app). Prvý úspešný deployment zobrazí adresu v Actions. Až potom ju pridaj do Homebrew Channel. Aktualizácie sa publikujú pushom do `main`; pre tlačidlo Update na TV zvýš verziu aplikácie. Na GitHub nepatria osobné MAC/IP adresy, kamerové tokeny ani prístupové údaje; priložené HA súbory obsahujú iba príklady.
 
-Pri aktualizácii zvýš `version` v `app/appinfo.json`, znova spusti `npm run repo:build` a reštartuj server. Homebrew Channel ponúkne **Update**. Pri rovnakej verzii možno v detaile aplikácie stlačiť **5** pre **Reinstall**.
+Pri aktualizácii zvýš `version` v `app/appinfo.json`, odošli zmeny do `main` a počkaj na úspešné publikovanie cez GitHub Actions. Homebrew Channel ponúkne **Update**. Pri rovnakej verzii možno v detaile aplikácie stlačiť **5** pre **Reinstall**.
 
 Formát overený podľa [načítania katalógu](https://github.com/webosbrew/webos-homebrew-channel/blob/main/frontend/views/BrowserPanel.js), [detailu a inštalácie](https://github.com/webosbrew/webos-homebrew-channel/blob/main/frontend/views/DetailsPanel.js) a [generátora manifestu](https://github.com/webosbrew/webos-homebrew-channel/blob/main/tools/gen-manifest.js).
 
