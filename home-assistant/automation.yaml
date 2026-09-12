@@ -10,18 +10,18 @@ conditions: []
 actions:
   - if:
       - condition: template
-        value_template: "{{ states('media_player.lg_tv') not in ['on', 'idle', 'playing', 'paused'] }}"
+        value_template: "{{ states('media_player.lg_webos_tv_75qned87a6b_beufljp') not in ['on', 'idle', 'playing', 'paused'] }}"
     then:
       - action: wake_on_lan.send_magic_packet
         data:
-          mac: "AA:BB:CC:DD:EE:FF"
-      - wait_template: "{{ states('media_player.lg_tv') in ['on', 'idle', 'playing', 'paused'] }}"
+          mac: "1C:F4:3F:F0:07:F8"
+      - wait_template: "{{ states('media_player.lg_webos_tv_75qned87a6b_beufljp') in ['on', 'idle', 'playing', 'paused'] }}"
         timeout: "00:00:30"
         continue_on_timeout: false
       - delay: "00:00:02"
   - action: webostv.command
     target:
-      entity_id: media_player.lg_tv
+      entity_id: media_player.lg_webos_tv_75qned87a6b_beufljp
     data:
       command: system.launcher/launch
       payload:

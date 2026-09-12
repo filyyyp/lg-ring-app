@@ -92,7 +92,11 @@ Potom vytvor novú automatizáciu, otvor jej YAML editor a vlož `home-assistant
 - `media_player.lg_tv` – všade rovnaká entita TV.
 - `AA:BB:CC:DD:EE:FF` – MAC TV.
 
-Automatizácia čaká najviac 30 sekúnd na aktívny stav TV a pri timeout končí. Opakované zazvonenie obnoví časovač aplikácie. Automatizácia nemení systémovú hlasitosť, mute ani zvukový výstup TV: zvuk preto nemusí byť počuť pri stíšení alebo vypnutom soundbare. Parameter `volume` ovláda iba prehrávač aplikácie.
+Automatizácia si pred prebudením uloží stav TV, čaká najviac 30 sekúnd na aktívny stav a pri timeout končí. Po odoslaní príkazu aplikácii čaká 20 sekúnd a vypne TV iba vtedy, keď bola pôvodne vypnutá. Zapnutú TV nechá zapnutú. Ďalšie stlačenia počas tejto sekvencie ignoruje (`mode: single`), aby sa nestratil pôvodný stav. Priame opakované spustenie aplikácie mimo tejto automatizácie stále obnovuje jej časovač.
+
+Predvolene sa za vypnutú považuje iba TV so stavom `off`. Ak si na svojej TV overil, že po vypnutí hlási `unavailable`, doplň tento stav do `tv_off_states`. Samotná nedostupnosť môže znamenať aj výpadok siete, preto sa takto predvolene nevyhodnocuje. Pri ostatných neznámych stavoch automatizácia skončí bez ovládania TV. Vypnutie je časované, nesleduje ručné prevzatie ovládania: ak TV zobudil zvonček a začneš ju sledovať, po 20 sekundách sa aj tak vypne. Reštart HA alebo znovunačítanie automatizácií počas čakania môže prerušiť záverečné vypnutie.
+
+Automatizácia nemení systémovú hlasitosť, mute ani zvukový výstup TV: zvuk preto nemusí byť počuť pri stíšení alebo vypnutom soundbare. Parameter `volume` ovláda iba prehrávač aplikácie.
 
 ## Parametre spustenia
 
@@ -110,7 +114,7 @@ Video používa natívny prehrávač TV (napríklad kompatibilné HLS/H.264). Po
 
 TV musí mať prístup k URL bez prihlasovacej stránky a vlastných Authorization hlavičiek. Aplikácia nevytvára kamerový stream ani HA token. Do balíka nevkladaj hlavný HA token; zdroj kamery nastavíme podľa tvojej integrácie, ideálne lokálne alebo krátkodobým URL. Overenie kamery urob až po úspešnom teste zvuku.
 
-Po časovači alebo tlačidle Späť aplikácia zavolá `window.close()`. Správanie návratu a obnovenie predchádzajúceho zdroja závisí od TV a **nie je garantované**. Automaticky nevypína TV, ktorú zobudila. Nejde o prekrytie cez Netflix/HDMI ani o prehrávanie v deep standby so zhasnutým panelom.
+Po časovači alebo tlačidle Späť aplikácia zavolá `window.close()`. Správanie návratu a obnovenie predchádzajúceho zdroja závisí od TV a **nie je garantované**. Samotná aplikácia TV nevypína; pôvodne vypnutú TV vypne priložená HA automatizácia. Nejde o prekrytie cez Netflix/HDMI ani o prehrávanie v deep standby so zhasnutým panelom.
 
 ## Súbory a zdroje
 
