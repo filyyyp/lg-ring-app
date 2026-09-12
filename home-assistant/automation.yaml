@@ -1,6 +1,11 @@
 # Vlož do YAML editora jednej novej automatizácie. Nahraď entity a MAC.
 alias: LG Ring – zvonček na TV
-description: Zobudí LG TV a spustí aplikáciu Zvonček.
+description: Zobudí LG TV a po zvonení ju vypne, iba ak bola pôvodne vypnutá.
+variables:
+  tv_entity: media_player.lg_tv
+  tv_mac: "AA:BB:CC:DD:EE:FF"
+  # unavailable pridaj iba ak si overil, že ho TV hlási po vypnutí.
+  tv_off_states: ["off"]
 triggers:
   - trigger: state
     entity_id: binary_sensor.doorbell
@@ -8,20 +13,27 @@ triggers:
     to: "on"
 conditions: []
 actions:
+  - variables:
+      initial_tv_state: "{{ states(tv_entity) }}"
+  - variables:
+      tv_was_off: "{{ initial_tv_state in tv_off_states }}"
+  - condition: template
+    value_template: "{{ tv_was_off or initial_tv_state in ['on', 'idle', 'playing', 'paused'] }}"
   - if:
       - condition: template
-        value_template: "{{ states('media_player.lg_webos_tv_75qned87a6b_beufljp') not in ['on', 'idle', 'playing', 'paused'] }}"
+        value_template: "{{ tv_was_off }}"
     then:
       - action: wake_on_lan.send_magic_packet
         data:
-          mac: "1C:F4:3F:F0:07:F8"
-      - wait_template: "{{ states('media_player.lg_webos_tv_75qned87a6b_beufljp') in ['on', 'idle', 'playing', 'paused'] }}"
+          mac: "{{ tv_mac }}"
+      - wait_template: "{{ states(tv_entity) in ['on', 'idle', 'playing', 'paused'] }}"
         timeout: "00:00:30"
         continue_on_timeout: false
       - delay: "00:00:02"
   - action: webostv.command
+    continue_on_error: true
     target:
-      entity_id: media_player.lg_webos_tv_75qned87a6b_beufljp
+      entity_id: "{{ tv_entity }}"
     data:
       command: system.launcher/launch
       payload:
@@ -34,4 +46,14 @@ actions:
           label: "VCHODOVÉ DVERE"
           # camera: "http://192.168.1.50:8080/doorbell.m3u8"
           # cameraType: video
-mode: restart
+  - delay: "00:00:20"
+  - if:
+      - condition: template
+        value_template: "{{ tv_was_off }}"
+    then:
+      - action: media_player.turn_off
+        target:
+          entity_id: "{{ tv_entity }}"
+# Ignoruje opakovane zazvonenie pocas sekvencie, aby sa zachoval povodny stav.
+mode: single
+max_exceeded: silent
