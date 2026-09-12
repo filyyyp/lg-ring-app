@@ -1,0 +1,4 @@
+# Developer Tools → Actions → YAML mode. Najprv vypni TV ovládačom.
+action: wake_on_lan.send_magic_packet
+data:
+  mac: "AA:BB:CC:DD:EE:FF"

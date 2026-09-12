@@ -1,0 +1,11 @@
+# Developer Tools → Actions → YAML mode, pri zapnutej TV.
+action: webostv.command
+target:
+  entity_id: media_player.lg_tv
+data:
+  command: system.launcher/launch
+  payload:
+    id: sk.filip.doorbell
+    params:
+      action: doorbell
+      duration: 15

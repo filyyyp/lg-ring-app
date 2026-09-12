@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zvonček · LG Ring</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header><span class="brand"><span class="brand-mark">↗</span> DOMA <span class="divider">/</span> ZVONČEK</span><span id="clock"></span></header>
+    <section class="stage" aria-labelledby="title">
+      <div id="media" hidden></div>
+      <div class="content">
+        <span class="eyebrow" id="status">PRIPRAVENÉ NA ZAZVONENIE</span>
+        <div class="bell" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M17 27c0-21 30-21 30 0v12l6 8H11l6-8V27Z"/><path d="M25 54c2 7 12 7 14 0M29 10V6h6v4"/></svg></div>
+        <h1 id="title">Vitaj doma.</h1>
+        <p id="message">Keď niekto zazvoní, uvidíš to tu.</p>
+        <p id="camera-status" role="status"></p>
+        <p id="audio-status" role="status"></p>
+        <div class="actions"><button id="test">Vyskúšať zvonček <span>↗</span></button><button id="dismiss" class="secondary" hidden>Zavrieť</button></div>
+      </div>
+      <div class="bottom"><span id="location">VCHODOVÉ DVERE</span><span id="countdown">LG Ring</span></div>
+      <div class="progress"><div id="progress"></div></div>
+    </section>
+    <footer><span>Home Assistant → LG TV</span><span>Šípky · výber &nbsp;&nbsp; OK · potvrdiť &nbsp;&nbsp; Späť · zavrieť</span></footer>
+  </main>
+  <audio id="chime" src="sounds/doorbell.wav" preload="auto"></audio>
+  <script src="app.js"></script>
+</body>
+</html>

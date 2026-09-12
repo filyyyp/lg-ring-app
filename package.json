@@ -1,0 +1,17 @@
+{
+  "name": "lg-ring",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LG webOS doorbell client for Home Assistant",
+  "scripts": {
+    "start": "python3 -m http.server 4173 --bind 127.0.0.1 --directory app",
+    "test": "node --test tests/*.test.cjs",
+    "assets": "python3 scripts/assets.py",
+    "package": "ares-package app -o dist",
+    "repo:build": "npm run package && node scripts/repository.cjs",
+    "repo:serve": "node scripts/repository-server.cjs"
+  },
+  "devDependencies": {
+    "@webos-tools/cli": "^3.2.6"
+  }
+}

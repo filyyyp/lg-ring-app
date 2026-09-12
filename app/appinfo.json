@@ -1,0 +1,14 @@
+{
+  "id": "sk.filip.doorbell",
+  "version": "0.1.0",
+  "vendor": "LG Ring",
+  "type": "web",
+  "main": "index.html",
+  "title": "Zvonček",
+  "icon": "icon.png",
+  "appDescription": "Zvonček a kamera cez Home Assistant",
+  "resolution": "1920x1080",
+  "handlesRelaunch": true,
+  "requiredACG": [],
+  "disableBackHistoryAPI": true
+}
